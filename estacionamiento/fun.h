@@ -7,6 +7,7 @@ typedef struct propietario
     char dir[TAM];
     char tarjeta[TAM];
     int estado;
+    int edad;
 }ePropietario;
 
 typedef struct coche
@@ -16,6 +17,8 @@ typedef struct coche
     int marca;
     int propietario;
     int estado;
+    int monto;
+    int horas;
 }eCoche;
 
 
@@ -74,3 +77,13 @@ void listarPropietariosAudi(ePropietario* , int, eCoche*, int);
 void ordenarCoches(eCoche*, int);
 
 void imprimirCochesYPropietarios(eCoche *coches, int lenC, ePropietario *propietarios, int lenP);
+
+void ordenarPropietario(ePropietario* lista, int len, int opcion);
+
+void listarPropietariosEdad(ePropietario lista[], int len, int edad);
+
+int esSoloNumeros(char cadena[]);
+
+void listarMayorTicket(eCoche *coches, int lenC, ePropietario *propietarios, int lenP);
+
+int buscarIndexCocheBaja(eCoche *lista, int id, int len);

@@ -160,6 +160,7 @@ void cargarRegistrosPropietarios(ePropietario *lista)
     char nombre[][20]= {"Juan","Luis","Maria","Jose"};
     char tarjeta[][20]= {"111-111","222-222","333-333","444-444"};
     char direccion[][20]= {"mitre","urquiza","belgrano","alsina"};
+    int edad[] = {22, 23, 24, 25};
     int i;
 
     for(i = 0; i < 4; i++)
@@ -169,6 +170,7 @@ void cargarRegistrosPropietarios(ePropietario *lista)
         strcpy(lista[i].tarjeta, tarjeta[i]);
         strcpy(lista[i].dir, direccion[i]);
         lista[i].estado = 1;
+        lista[i].edad =edad[i];
     }
 }
 
@@ -178,7 +180,7 @@ void listarPropietarios(ePropietario lista[], int len)
     for(i = 0; i < len; i++)
     {
         if(lista[i].estado == 1)
-            printf("%d -- %s -- %s -- %s\n", lista[i].id, lista[i].nya, lista[i].tarjeta, lista[i].dir);
+            printf("%d -- %s -- %s -- %s -- %d\n", lista[i].id, lista[i].nya, lista[i].tarjeta, lista[i].dir, lista[i].edad);
     }
 }
 
@@ -188,6 +190,7 @@ void inicializarCoche(eCoche *lista, int len)
     for(i = 0; i < len; i++)
     {
         lista[i].estado = 0;
+        lista[i].horas =-1;
     }
 }
 
@@ -206,6 +209,8 @@ void cargarRegistrosCoches(eCoche *lista)
         lista[i].propietario = propietario[i];
         strcpy(lista[i].patente, patente[i]);
         lista[i].estado = 1;
+        lista[i].monto = 0;
+        lista[i].horas = 0;
     }
 }
 
@@ -346,22 +351,20 @@ int calcularRecaudacionTotal(eCoche* lista, int len)
 {
     int total = 0;
     int i;
-    int estadia;
     for(i = 0; i < len; i++)
     {
-        estadia = devolverHorasEstadia();
 
-        if(lista[i].marca == 1 && lista[i].estado == 1)
-            total += estadia * 150;
+        if(lista[i].marca == 1 && lista[i].estado == 0)
+            total += lista[i].monto;
 
-        if(lista[i].marca == 2 && lista[i].estado == 1)
-            total += estadia * 175;
+        if(lista[i].marca == 2 && lista[i].estado == 0)
+            total += lista[i].monto;
 
-        if(lista[i].marca == 3 && lista[i].estado == 1)
-            total += estadia * 200;
+        if(lista[i].marca == 3 && lista[i].estado == 0)
+            total += lista[i].monto;
 
-        if(lista[i].marca == 4 && lista[i].estado == 1)
-            total += estadia * 250;
+        if(lista[i].marca == 4 && lista[i].estado == 0)
+            total += lista[i].monto;
     }
     return total;
 }
@@ -370,7 +373,6 @@ int calcularRecaudacionMarca(eCoche* lista, int len, int marca)
 {
     int total = 0;
     int i;
-    int estadia;
     int precioMarca;
 
     if(marca == ALPHA)
@@ -387,10 +389,8 @@ int calcularRecaudacionMarca(eCoche* lista, int len, int marca)
 
     for(i = 0; i < len; i++)
     {
-        estadia = devolverHorasEstadia();
-
-        if(lista[i].marca == marca && lista[i].estado == 1)
-            total += estadia * precioMarca;
+        if(lista[i].marca == marca && lista[i].estado == 0)
+            total += lista[i].monto;
     }
     return total;
 }
@@ -482,4 +482,144 @@ void imprimirCochesYPropietarios(eCoche *coches, int lenC, ePropietario *propiet
                 printf("%d -- %s -- %s -- %s\n", propietarios[index].id, propietarios[index].nya, propietarios[index].tarjeta, propietarios[index].dir);
         }
     }
+}
+
+//-----------
+
+void ordenarPropietario(ePropietario* lista, int len, int opcion)
+{
+    int i;
+    int j;
+    ePropietario aux;
+
+    if(opcion == 1)
+    {
+        for(i = 0; i < len - 1; i++)
+        {
+            for(j = i + 1; j < len; j++)
+            {
+                if(strcmp(lista[i].nya, lista[j].nya) > 0)
+                {
+                       aux = lista[i];
+                       lista[i] = lista[j];
+                       lista[j] = aux;
+                }
+            }
+        }
+    }
+
+    if(opcion == 2)
+    {
+        for(i = 0; i < len - 1; i++)
+        {
+            for(j = i + 1; j < len; j++)
+            {
+                if(strcmp(lista[i].nya, lista[j].nya) < 0)
+                {
+                       aux = lista[i];
+                       lista[i] = lista[j];
+                       lista[j] = aux;
+                }
+            }
+        }
+    }
+
+}
+
+void listarPropietariosEdad(ePropietario lista[], int len, int edad)
+{
+    int i;
+    for(i = 0; i < len; i++)
+    {
+        if(lista[i].estado == 1 && lista[i].edad > edad)
+            printf("%d -- %s -- %s -- %s -- %d\n", lista[i].id, lista[i].nya, lista[i].tarjeta, lista[i].dir, lista[i].edad);
+    }
+}
+
+
+void pedirEdadPropietario(ePropietario *lista, int index)
+{
+    char edad[TAM];
+    int validacion = 0;
+    while(validacion == 0)
+    {
+        printf("\nEdad: ");
+        fflush(stdin);
+        gets(edad);
+        validacion = esSoloNumeros(edad);
+        if(validacion == 0)
+            printf("\nEdad invalida\n");
+    }
+    lista[index].edad = atoi(edad);
+}
+
+int esSoloNumeros(char cadena[])
+{
+   int i=0;
+   while(cadena[i] != '\0')
+   {
+       if(!isdigit(cadena[i]))
+           return 0;
+       i++;
+   }
+   if(atoi(cadena) > 100 || atoi(cadena) < 1)
+    return 0;
+
+   return 1;
+}
+
+void listarMayorTicket(eCoche *coches, int lenC, ePropietario *propietarios, int lenP)
+{
+    int mayor =0;
+    int idC;
+    int idP;
+    char marca[30];
+    int indexC;
+    int indexP;
+    int i;
+    for(i = 0; i < lenC; i++)
+    {
+        if(coches[i].estado == 0 && coches[i].horas != -1)
+        {
+            if(coches[i].monto > mayor)
+            {
+                mayor = coches[i].monto;
+                idC = coches[i].id;
+                idP = coches[i].propietario;
+            }
+        }
+    }
+    if(mayor == 0)
+        printf("\nNo se facturaron tickets\n");
+    else
+    {
+        indexP = buscarIndexPropietario(propietarios, idP, lenP);
+        indexC = buscarIndexCocheBaja(coches, idC, lenC);
+        if(coches[indexC].marca == 1)
+            strcpy(marca, "ALPHA");
+        if(coches[indexC].marca == 2)
+            strcpy(marca, "FERRARI");
+        if(coches[indexC].marca == 3)
+            strcpy(marca, "AUDI");
+        if(coches[indexC].marca == 4)
+            strcpy(marca, "OTRO");
+        printf("\nMayor monto: $%d\n", mayor);
+        printf("%d -- %s -- %s -- %s -- %d\n", propietarios[indexP].id, propietarios[indexP].nya, propietarios[indexP].tarjeta, propietarios[indexP].dir, propietarios[indexP].edad);
+        printf("%d -- %s -- %s -- HORAS: %d\n", coches[indexC].id, coches[indexC].patente, marca, coches[indexC].horas);
+    }
+}
+
+int buscarIndexCocheBaja(eCoche *lista, int id, int len)
+{
+    int i;
+    int index = -1;
+    for(i = 0; i < len; i++)
+    {
+        if(lista[i].id == id)
+        {
+            index = i;
+            break;
+        }
+    }
+    return index;
 }

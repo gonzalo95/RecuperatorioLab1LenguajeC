@@ -22,15 +22,19 @@ int main()
     int auxIdCoche;
     int estadia;
     int monto;
+    int auxOrdenar;
+    char edad[3];
 
     inicializarPropietario(propietarios, TAMP);
     inicializarCoche(coches, TAMC);
     cargarRegistrosPropietarios(propietarios);
     cargarRegistrosCoches(coches);
 
+    listarPropietarios(propietarios, TAMP);
+
     do
     {
-        printf("\n1.-Ingreso propietario\n2.-Modificacion propietario\n3.-Baja propietario\n4.-Listar propietarios\n5.-Alta coche\n6.-Egreso coche\n7.-Listar coches\n8.-Recaudacion total\n9.-Recaudacion por marca\n10.-Listar coches de propietario\n11.-Listar propietarios AUDI\n12.-Listar coches y propietarios\n15.-Salir\n");
+        printf("\n1.-Ingreso propietario\n2.-Modificacion propietario\n3.-Baja propietario\n4.-Listar propietarios\n5.-Alta coche\n6.-Egreso coche\n7.-Listar coches\n8.-Recaudacion total\n9.-Recaudacion por marca\n10.-Listar coches de propietario\n11.-Listar propietarios AUDI\n12.-Listar coches y propietarios\n15.-Salir\n16.-Listar propietarios ordenados\n17.-Listar propietarios con filtro edad\n18.-Ticket mas alto\n");
         scanf("%d", &opcion);
 
         switch(opcion)
@@ -47,10 +51,12 @@ int main()
             pedirTarjetaPropietario(propietarios, indexPropietario);
             pedirDireccionPropietario(propietarios, indexPropietario);
             propietarios[indexPropietario].estado = 1;
+            pedirEdadPropietario(propietarios, indexPropietario);
 
             break;
 
         case 2:
+            listarPropietarios(propietarios, TAMP);
             printf("\nId: ");
             scanf("%d", &auxIdPropietario);
             indexPropietario = buscarIndexPropietario(propietarios, auxIdPropietario, TAMP);
@@ -68,6 +74,7 @@ int main()
             break;
 
         case 3:
+            listarPropietarios(propietarios, TAMP);
             printf("\nId: ");
             scanf("%d", &auxIdPropietario);
             indexPropietario = buscarIndexPropietario(propietarios, auxIdPropietario, TAMP);
@@ -89,6 +96,7 @@ int main()
             break;
 
         case 5:
+            listarPropietarios(propietarios, TAMP);
             indexCoche = buscarEspacioCoche(coches, TAMC);
             if(indexCoche == -1)
             {
@@ -107,9 +115,11 @@ int main()
             coches[indexCoche].marca = pedirMarca();
             pedirPatente(coches, indexCoche);
             coches[indexCoche].estado = 1;
+            coches[indexCoche].horas = 0;
             break;
 
         case 6:
+            listarCoches(coches, TAMC, propietarios, TAMP);
             printf("\nId del coche: \n");
             scanf("%d", &auxIdCoche);
             indexCoche = buscarIndexCoche(coches, auxIdCoche, TAMC);
@@ -134,6 +144,8 @@ int main()
 
             imprimirTicket(coches, indexCoche, propietarios, TAMP, monto);
             coches[indexCoche].estado = 0;
+            coches[indexCoche].monto = monto;
+            coches[indexCoche].horas = estadia;
             break;
 
         case 7:
@@ -142,24 +154,25 @@ int main()
 
         case 8:
             monto = calcularRecaudacionTotal(coches, TAMC);
-            printf("\nLa recaudacion total es: %d\n", monto);
+            printf("\nLa recaudacion total es: $%d\n", monto);
             break;
 
         case 9:
             monto = calcularRecaudacionMarca(coches, TAMC, ALPHA);
-            printf("\nLa recaudacion de ALPHA es: %d\n", monto);
+            printf("\nLa recaudacion de ALPHA es: $%d\n", monto);
 
             monto = calcularRecaudacionMarca(coches, TAMC, FERRARI);
-            printf("\nLa recaudacion de FERRARI es: %d\n", monto);
+            printf("\nLa recaudacion de FERRARI es: $%d\n", monto);
 
             monto = calcularRecaudacionMarca(coches, TAMC, AUDI);
-            printf("\nLa recaudacion de AUDI es: %d\n", monto);
+            printf("\nLa recaudacion de AUDI es: $%d\n", monto);
 
             monto = calcularRecaudacionMarca(coches, TAMC, OTROS);
-            printf("\nLa recaudacion de OTROS es: %d\n", monto);
+            printf("\nLa recaudacion de OTROS es: $%d\n", monto);
             break;
 
         case 10:
+            listarPropietarios(propietarios, TAMP);
             printf("\nId del propietario: \n");
             scanf("%d", &auxIdPropietario);
             indexPropietario = buscarIndexPropietario(propietarios, auxIdPropietario, TAMP);
@@ -185,6 +198,33 @@ int main()
 
         case 15:
             printf("Programa finalizado");
+            break;
+
+        case 16:
+            printf("\nEn que orden mostrar? (1- ascendente 2-descendente):\n");
+            scanf("%d", &auxOrdenar);
+            if(auxOrdenar != 2 && auxOrdenar != 1)
+            {
+                printf("\Orden inexistente\n");
+                break;
+            }
+            ordenarPropietario(propietarios, TAMP, auxOrdenar);
+            listarPropietarios(propietarios, TAMP);
+            break;
+
+        case 17:
+            printf("\nEdad: \n");
+            scanf("%s", edad);
+            if (esSoloNumeros(edad) == 0)
+            {
+                printf("\nEdad Invalida\n");
+                break;
+            }
+            listarPropietariosEdad(propietarios, TAMP, atoi(edad));
+            break;
+
+        case 18:
+            listarMayorTicket(coches, TAMC, propietarios, TAMP);
             break;
 
         default:
